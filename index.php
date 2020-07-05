@@ -7,23 +7,9 @@
 <div class="bg-amarillo contenedor sombra">
     <form action="" id="contacto" action="#">
         <legend>Añada un Contacto <span>Todos los campos son obligatorios</span></legend>
-        <div class="campos">
-            <div class="campo">
-                <label for="nombre">Nombre:</label>
-                <input type="text" placeholder="Nombre Contacto" id="nombre">
-            </div>
-            <div class="campo">
-                <label for="empresa">Empresa:</label>
-                <input type="text" placeholder="Nombre Empresa" id="empresa">
-            </div>
-            <div class="campo">
-                <label for="telefono">Teléfono:</label>
-                <input type="tel" placeholder="Nombre Contacto" id="telefono">
-            </div>
-        </div>
-        <div class="campo enviar">
-            <input type="submit" value="Añadir">
-        </div>
+
+        <?php include 'inc/layout/formulario.php' ?>
+        
     </form>
 </div>
 
@@ -51,7 +37,7 @@
                         <td>UTT</td>
                         <td>1234567890</td>
                         <td>
-                            <a href="#" class="btn-editar btn">
+                            <a href="editar.php?id=1" class="btn-editar btn">
                                 <i class="fas fa-pen-square"></i>
                             </a>
                             <button  data-id="1" type="button" class="btn-borrar btn">
@@ -64,7 +50,7 @@
                         <td>UTT</td>
                         <td>1234567890</td>
                         <td>
-                            <a href="#" class="btn-editar btn">
+                            <a href="editar.php?id=1" class="btn-editar btn">
                                 <i class="fas fa-pen-square"></i>
                             </a>
                             <button  data-id="1" type="button" class="btn-borrar btn">
@@ -77,7 +63,7 @@
                         <td>UTT</td>
                         <td>1234567890</td>
                         <td>
-                            <a href="#" class="btn-editar btn">
+                            <a href="editar.php?id=1" class="btn-editar btn">
                                 <i class="fas fa-pen-square"></i>
                             </a>
                             <button  data-id="1" type="button" class="btn-borrar btn">
