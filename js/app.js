@@ -1,4 +1,5 @@
-const formularioContactos = document.querySelector('#contacto');
+const formularioContactos = document.querySelector('#contacto'),
+      listadoContactos = document.querySelector('#listado-contactos tbody');
 
 eventListeners();
 
@@ -19,8 +20,6 @@ function leerFormulario(e) {
     if (nombre === '' || empresa === '' || telefono === '') {
         //2 parametros texto y clase
         mostrarNotification('Todos los campos son obligatorios', 'error');
-
-        //mostrarNotification('Todos los campos estan llenos', 'exito');
     } else {
         //pasa la valiacion, crear llamado a Ajax
         const infoContacto = new FormData();
@@ -28,6 +27,8 @@ function leerFormulario(e) {
         infoContacto.append('empresa', empresa);
         infoContacto.append('telefono', telefono);
         infoContacto.append('accion', accion);
+
+        //console log(...info contacto)
 
         if(accion === 'crear'){
             //crearemos un nuevo contacto
@@ -45,21 +46,69 @@ function insertarBD(datos) {
     const xhr = new XMLHttpRequest();
    
     //abrir la conexion
-    xhr.open('POST', 'inc/modelos/modelos-contacto.php', true);
+    xhr.open('POST', 'inc/modelos/modelo-contactos.php', true);
 
     //pasar los datos
     xhr.onload = function() {
         if(this.status === 200) {
-            console.log(JSON.parse(xhr.responseText));
+            console.log(JSON.parse( xhr.responseText) );
             //leemos la respuesta de php
             const respuesta = JSON.parse(xhr.responseText);
-            console.log(respuesta.empresa);
+            
+            // insertar un nuevo elemento a la tabla
+            const nuevoContacto = document.createElement('tr');
+
+            nuevoContacto.innerHTML = `
+                <td>${respuesta.datos.nombre}</td>
+                <td>${respuesta.datos.empresa}</td>
+                <td>${respuesta.datos.telefono}</td>
+            `;
+
+            //crear contenedor para los botones
+            const contenedorAcciones = document.createElement('td');
+
+            //crear icono de editar
+            const iconoEditar = document.createElement('i');
+            iconoEditar.classList.add('fas', 'fa-pen-square');
+
+            //crea el enlace para editar
+            const btnEditar = document.createElement('a');
+            btnEditar.appendChild(iconoEditar);
+            btnEditar.href = `editar.php?id=${respuesta.datos.id_insertado}`;
+            btnEditar.classList.add('btn', 'btn-editar');
+
+            //agregarlo al padre
+            contenedorAcciones.appendChild(btnEditar);
+
+            //crear el icono de eliminar
+            const iconoEliminar = document.createElement('i');
+            iconoEliminar.classList.add('fas', 'fa-trash-alt');
+
+            //crear el boton de eliminar
+            const btnEliminar = document.createElement('button');
+            btnEliminar.appendChild(iconoEliminar);
+            btnEliminar.setAttribute('data-id', respuesta.datos.id_insertado);
+            btnEliminar.classList.add('btn', 'btn-borrar');
+
+            //agregarlo al padre
+            contenedorAcciones.appendChild(btnEliminar);
+
+            //agregarlo al tr
+            nuevoContacto.appendChild(contenedorAcciones);
+
+            //agregarlo con los contactos
+            listadoContactos.appendChild(nuevoContacto);
+        
+            //resetear el formulario
+            document.querySelector('form').reset();
+
+            //mostrar el formulario
+            mostrarNotification('contacto creado correctamente', 'correcto');
         }
     }
 
     //enviar los datos
     xhr.send(datos)
-
 
 }
 
