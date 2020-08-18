@@ -1,18 +1,19 @@
 const formularioContactos = document.querySelector('#contacto'),
-      listadoContactos = document.querySelector('#listado-contacto tbody'),
+      listadoContactos = document.querySelector('#listado-contactos tbody'),
       inputBuscador = document.querySelector('#buscar');
 
-eventListener();
+eventListeners();
 
-function eventListener() {
-    // Cuando el formluario de crear o editar se ejecuta
+function eventListeners() {
+    // t
     formularioContactos.addEventListener('submit', leerFormulario);
 
-    // Listener para eliminar un boton
-    if(listadoContactos){
-        listadoContactos.addEventListener('cilck', eliminarContacto);
+    // t
+    if(listadoContactos) {
+        listadoContactos.addEventListener('click', eliminarContacto);
     }
 
+    // t
     inputBuscador.addEventListener('input', buscarContactos);
 
     numeroContactos();
@@ -20,51 +21,56 @@ function eventListener() {
 
 function leerFormulario(e) {
     e.preventDefault();
-    // Leer los datos de los inputs
+    
+    // t
     const nombre = document.querySelector('#nombre').value,
           empresa = document.querySelector('#empresa').value,
           telefono = document.querySelector('#telefono').value,
           accion = document.querySelector('#accion').value;
 
-    if (nombre === '' || empresa === '' || telefono === '') {
-        // 2 parametros texto y clase
-        mostrarNotificacion('Todos los campos son obligatorios', 'error');
+    if(nombre === '' || empresa === '' || telefono === '') {
+        // t
+        mostrarNotificacion('campos obligatorios', 'error');
     } else {
-        // Pasa la validación, crear llamdo a Ajax
+        // t
         const infoContacto = new FormData();
         infoContacto.append('nombre', nombre);
         infoContacto.append('empresa', empresa);
         infoContacto.append('telefono', telefono);
         infoContacto.append('accion', accion);
 
+        // t
+
         if(accion === 'crear'){
-            // Crearemos un nuevo elemento
+            // t
             insertarBD(infoContacto);
-        } else{
+        } else {
+            // t
+            // t
             const idRegistro = document.querySelector('#id').value;
             infoContacto.append('id', idRegistro);
             actualizarRegistro(infoContacto);
         }
     }
 }
-// Inserta en la base de datos via Ajax
+// t
 function insertarBD(datos){
-    // Llamado a Ajax
+    // t
 
-    // Crear el objeto
+    // t
     const xhr = new XMLHttpRequest();
-    // abrir la conexion
-    xhr.open('POST', 'inc/modelos/modelos-contacto.php', true);
-    // pasar los datos
+
+    // t
+    xhr.open('POST', 'inc/modelos/modelo-contactos.php', true);
+
+    // t
     xhr.onload = function() {
-        if (this.status === 200) {
-            console.log(JSON.parse( xhr.responseText) );
-            // Leemos la respuesta de php
-            const respuesta = JSON.parse( xhr.responseText);
+        if(this.status === 200) {
+            // console.log(JSON.parse(xhr.responseText));
+            // t
+            const respuesta = JSON.parse(xhr.responseText);
 
-            console.log(respuesta);
-
-            // Inserta un complemento
+            // t
             const nuevoContacto = document.createElement('tr');
 
             nuevoContacto.innerHTML = `
@@ -73,119 +79,139 @@ function insertarBD(datos){
                 <td>${respuesta.datos.telefono}</td>
             `;
 
-            // Crear contenedor para los botones
+            // t
             const contenedorAcciones = document.createElement('td');
-
-            // Crear el icono de Editar
+            
+            // t
             const iconoEditar = document.createElement('i');
             iconoEditar.classList.add('fas', 'fa-pen-square');
 
-            // Crear el enlace para editar
+            // t
             const btnEditar = document.createElement('a');
             btnEditar.appendChild(iconoEditar);
             btnEditar.href = `editar.php?id=${respuesta.datos.id_insertado}`;
             btnEditar.classList.add('btn', 'btn-editar');
 
-            // Agregarlo al padre
+            // t
             contenedorAcciones.appendChild(btnEditar);
 
-            // Crear el icono de eliminar
+            // t
             const iconoEliminar = document.createElement('i');
             iconoEliminar.classList.add('fas', 'fa-trash-alt');
-
-            // Crear el boton  de eliminar
+            
+            // t
             const btnEliminar = document.createElement('button');
             btnEliminar.appendChild(iconoEliminar);
             btnEliminar.setAttribute('data-id', respuesta.datos.id_insertado);
             btnEliminar.classList.add('btn', 'btn-borrar');
 
-            // Agregarlo al padre
+            // t
             contenedorAcciones.appendChild(btnEliminar);
 
-            // Agregarlo al tr
+            // t
             nuevoContacto.appendChild(contenedorAcciones);
-
-            // Agregar al contacto
+            
+            // t
             listadoContactos.appendChild(nuevoContacto);
 
-            // Resetear el form
+            // t
             document.querySelector('form').reset();
-            // Mostrar la notificación
-            mostrarNotificacion('Contacto Creado Correctamente', 'correcto');
 
+            // t
+            mostrarNotificacion('Contacto creado correctamente', 'correcto');
+
+            // t
             numeroContactos();
         }
     }
-    // enviar los datos
+
+    // t
     xhr.send(datos)
 }
 
-function actualizarRegistro(datos){
+function actualizarRegistro(datos) {
+    //crear el objeto
     const xhr = new XMLHttpRequest();
 
-    xhr.open('POST', 'inc/modelos/modelos-contacto.php', true);
+    // abrir la conexion
+    xhr.open('POST', 'inc/modelos/modelo-contactos.php', true);
 
+    // abrir la respuesta
     xhr.onload = function(){
         if (this.status === 200) {
             const respuesta = JSON.parse(xhr.responseText);
             
             if (respuesta.respuesta === 'correcto') {
+                // mostrar notificacion de correcto
                 mostrarNotificacion('Contacto Editado Correctamente', 'correcto');
             } else {
-                mostrarNotificacion('Hubo un error', 'correcto');
+                // hubo un error
+                mostrarNotificacion('Hubo un error...', 'error');
             }
+            // Despues de 3 segundos redireccionar
             setTimeout(() => {
                 window.location.href = 'index.php';
             }, 4000);
         }
     }
 
+    // enviar la peticion
     xhr.send(datos);
 }
-
-// Eliminar el contacto
+// t
 function eliminarContacto(e) {
     if (e.target.parentElement.classList.contains('btn-borrar') ) {
         // Tomar el ID
         const id = e.target.parentElement.getAttribute('data-id');
 
-        // Preguntar usuario
+        // console.log(id);
+        // Prentar usuario
         const respuesta = confirm('¿Estás seguro (a) ?');
 
         if (respuesta) {
+            // llamando a ajax
+            // crear el objeto
             const xhr = new XMLHttpRequest();
 
-            xhr.open('GET', `inc/modelos/modelos-contacto.php?id=${id}&accion=borrar`, true);
+            //abrir la conexion
+            xhr.open('GET', `inc/modelos/modelo-contactos.php?id=${id}&accion=borrar`, true);
 
+            //leer la respuesta
             xhr.onload = function() {
-                if (this.status === 200) {
+                if(this.status === 200) {
                     const resultado = JSON.parse(xhr.responseText);
 
                     if (resultado.respuesta == 'correcto') {
+                        //eliminar el registro del DOM
+                        console.log(e.target.parentElement.parentElement.parentElement);
                         e.target.parentElement.parentElement.parentElement.remove();
+                        
+                        //monstrar notificacion
                         mostrarNotificacion('Contacto eliminado', 'correcto');
+                        //actualixa numero
+                        numeroContactos();
                     } else {
-                        mostrarNotificacion('Hubo un error', 'error');
+                        //monstramos una notificacion
+                        mostrarNotificacion('Hubo un error...', 'error');
                     }
                 }
             }
-
+            //enviar la peticion
             xhr.send();
         }
     }
 }
-
-// Notificación en pantalla
+// t
 function mostrarNotificacion(mensaje, clase) {
     const notificacion = document.createElement('div');
-    notificacion.classList.add(clase,'notificacion', 'sombra');
+    notificacion.classList.add(clase, 'notificacion', 'sombra');
     notificacion.textContent = mensaje;
 
-    // Formulario
+    // t
     formularioContactos.insertBefore(notificacion, document.querySelector('form legend'));
 
-    // Ocultar y Mostrar la notificación
-    setTimeout(()  => {
+    // t
+    setTimeout(() => {
         notificacion.classList.add('visible');
 
         setTimeout(() => {
@@ -196,8 +222,9 @@ function mostrarNotificacion(mensaje, clase) {
             }, 500);
         }, 3000);
     }, 100);
-}
 
+}
+// buscador de registros
 function buscarContactos(e) {
     const expresion = new RegExp(e.target.value, "i"),
           registros = document.querySelectorAll('tbody tr');
@@ -205,24 +232,26 @@ function buscarContactos(e) {
           registros.forEach(registro => {
               registro.style.display = 'none';
 
-              if (registro.childNodes[1].textContent.replace(/\s/g, " ").search(expresion) !=-1 ) {
+              if (registro.childNodes[1].textContent.replace(/\s/g, " ").search(expresion) != -1 ){
                 registro.style.display = 'table-row';
               }
               numeroContactos();
           })
 }
 
+//muetra numero de contactos
 function numeroContactos() {
     const totalContactos = document.querySelectorAll('tbody tr'),
-          contenedorNumero = document.querySelector('.total-contactos spam');
+          contenedorNumero = document.querySelector('.total-contactos span');
 
     let total = 0;
 
     totalContactos.forEach(contacto => {
-        if (contacto.style.display === '' || contacto.style.display == 'table-row') {
+        if (contacto.style.display === '' || contacto.style.display === 'table-row'){
             total++;
         }
     });
 
+    // t
     contenedorNumero.textContent = total;
 }

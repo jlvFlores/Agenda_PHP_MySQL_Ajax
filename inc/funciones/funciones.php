@@ -2,20 +2,22 @@
 
 function obtenerContactos() {
     include 'bd.php';
-    try{
-        return $conn->query("SELECT id, nombre, empresa, telefono FROM contactos");
+    try {
+        return $conn->query("SELECT id, nombre, empresa, telefono FROM contactos;");
     } catch(Exception $e) {
-        echo "Error!". $e->getMessage() . "<br>";
+        echo "Error!!" . $e->getMessage() . "<br>";
         return false;
     }
 }
 
+//obtiene un contacto, toma un id
+
 function obtenerContacto($id) {
     include 'bd.php';
     try {
-        return $conexion->query("SELECT id, nombre, empresa, telefono FROM contactos WHERE id = $id");
+        return $conn->query("SELECT id, nombre, empresa, telefono FROM contactos WHERE id = $id");
     } catch (Exception $e) {
-        echo "Error!!" . $e->getMessage(). "<br>";
+        echo "Error!!" . $e->getMessage() . "<br>";
         return false;
     }
 }
